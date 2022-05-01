@@ -6,7 +6,7 @@ class Model(object):
     def __init__(self,name):
         self.model_name = name
 
-    def DINHATI(self, MAX_WORD_TIT, MAX_WORD_SUB, MAX_WORD_SENT, MAX_LEN_SENT, MAX_WORD_CAP, EMB_MAT, DROP, HIDDEN1, HIDDEN2):
+    def DINHATI(self, MAX_WORD_TIT, MAX_WORD_SENT, MAX_LEN_SENT, EMB_MAT, DROP, HIDDEN1, HIDDEN2):
 
         #-----------------------------------
         #          Embedding Layer          
@@ -24,19 +24,19 @@ class Model(object):
 
         title = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(int(EMB_MAT.shape[1]/2), return_sequences=True),merge_mode='concat',name='title')(title_Embedding)
 
-        subtitle_Input = tf.keras.layers.Input(shape=(MAX_WORD_SUB,), name="subtitleInputs", dtype='float32')
+        # subtitle_Input = tf.keras.layers.Input(shape=(MAX_WORD_SUB,), name="subtitleInputs", dtype='float32')
 
-        subtitle_Embedding = embedding_layer(subtitle_Input) 
+        # subtitle_Embedding = embedding_layer(subtitle_Input) 
 
-        subtitle = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(int(EMB_MAT.shape[1]/2),return_sequences=True),merge_mode='concat',name='subtitle')(subtitle_Embedding)
+        # subtitle = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(int(EMB_MAT.shape[1]/2),return_sequences=True),merge_mode='concat',name='subtitle')(subtitle_Embedding)
         
-        subtitle = tf.keras.layers.GlobalAveragePooling1D(name='pooling_subtitle')(subtitle)
+        # subtitle = tf.keras.layers.GlobalAveragePooling1D(name='pooling_subtitle')(subtitle)
         
-        subtitle  = tf.expand_dims(subtitle , axis=1)
+        # subtitle  = tf.expand_dims(subtitle , axis=1)
         
-        attended_title = tf.keras.layers.Attention(name='title_subtitle_attention')([title,subtitle])
+        # attended_title = tf.keras.layers.Attention(name='title_subtitle_attention')([title,subtitle])
 
-        headline = tf.concat([title, attended_title, subtitle],axis=1,name="Headline")
+        headline = tf.concat([title],axis=1,name="Headline")
 
         #-----------------------------------
         #          Body Encoder
@@ -56,17 +56,17 @@ class Model(object):
 
         body_Embedding = tf.keras.layers.TimeDistributed(body_encoder, name='sentenceEncoding')(body_Input)
 
-        caption_Input = tf.keras.layers.Input(shape=(MAX_WORD_CAP,), name="captionInputs", dtype='float32')
+        # caption_Input = tf.keras.layers.Input(shape=(MAX_WORD_CAP,), name="captionInputs", dtype='float32')
 
-        caption_Embedding = embedding_layer(caption_Input) 
+        # caption_Embedding = embedding_layer(caption_Input) 
 
-        caption = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(int(EMB_MAT.shape[1]/2), dropout=DROP,return_sequences=True),merge_mode='concat',name='caption')(caption_Embedding)
+        # caption = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(int(EMB_MAT.shape[1]/2), dropout=DROP,return_sequences=True),merge_mode='concat',name='caption')(caption_Embedding)
 
-        caption = tf.keras.layers.GlobalAveragePooling1D(name='pooling_caption')(caption)
+        # caption = tf.keras.layers.GlobalAveragePooling1D(name='pooling_caption')(caption)
 
-        caption  = tf.expand_dims(caption , axis=1)
+        # caption  = tf.expand_dims(caption , axis=1)
 
-        body = tf.concat([body_Embedding,caption],axis=1)
+        body = tf.concat([body_Embedding],axis=1)
 
         body = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(int(EMB_MAT.shape[1]/2), dropout=0.3, return_sequences=True),merge_mode='concat',name='body')(body)
 
@@ -96,12 +96,12 @@ class Model(object):
 
         output = tf.keras.layers.Dense(1,activation="sigmoid")(dense02)
 
-        cap_bod_model = tf.keras.Model(inputs=[title_Input, subtitle_Input, body_Input, caption_Input], outputs=[output],name="Model")
+        cap_bod_model = tf.keras.Model(inputs=[title_Input, body_Input], outputs=[output],name="Model")
 
         return cap_bod_model, body_encoder  
     
-    def get_model(self, MAX_WORD_TIT, MAX_WORD_SUB, MAX_WORD_SENT, MAX_LEN_SENT, MAX_WORD_CAP, EMB_MAT, DROP, HIDDEN1, HIDDEN2):
+    def get_model(self, MAX_WORD_TIT, MAX_WORD_SENT, MAX_LEN_SENT, EMB_MAT, DROP, HIDDEN1, HIDDEN2):
         if self.model_name == "DINHATI":
-            return self.DINHATI(MAX_WORD_TIT, MAX_WORD_SUB, MAX_WORD_SENT, MAX_LEN_SENT, MAX_WORD_CAP, EMB_MAT, DROP, HIDDEN1, HIDDEN2)
+            return self.DINHATI(MAX_WORD_TIT, MAX_WORD_SENT, MAX_LEN_SENT, EMB_MAT, DROP, HIDDEN1, HIDDEN2)
         else:
             raise ValueError ("Please check Model Name")

@@ -1,9 +1,10 @@
 import argparse
-import tensorflow as tf
+import tensorflow as tf 
+from generate_input import geninps
 
 # parser
 parser = argparse.ArgumentParser()
-parser.add_argument("--mode", required=True, type=str, default='test')
+parser.add_argument("--mode", type=str, default='test')
 parser.add_argument('--max_tit', type=int, default=29)
 parser.add_argument('--max_sub', type=int, default=114)
 parser.add_argument('--max_body', type=int, default=35)
@@ -16,16 +17,21 @@ parser.add_argument('--batch', type=int, default=1024)
 parser.add_argument('--epochs', type=int, default=15)
 args = parser.parse_args()
 
-if args.mode == 'train':
+def trainFunc():
 	from train import Trainer
 	trainer = Trainer(max_tit=args.max_tit, max_sub=args.max_sub, max_body=args.max_body, max_sent=args.max_sent, max_cap=args.max_cap,
 	drop=args.drop, hidden1=args.hidden1, hidden2=args.hidden2, batch=args.batch, epochs=args.epochs)
 	trainer.training()
 
-elif args.mode =='test':
-	print("!!!!!!!!")
+def testFunc():
 	from testing import test
 	test()
 
-else:
-	raise ValueError ("please check --mode argument")
+print("generating inputs") 
+geninps() 
+print("training begins") 
+trainFunc() 
+print("training ends") 
+print("testing begins") 
+testFunc() 
+print("testing ends")

@@ -31,27 +31,27 @@ class Trainer(object):
 		self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.epsilon, amsgrad=False, name='Adam')
 
 	def get_training_inputs(self):
-		train_title = np.load("data/indexed_input/train/train_title.npy") 
-		train_body = np.load("data/indexed_input/train/train_body.npy")
-		train_subtitle = np.load("data/indexed_input/train/train_subtitle.npy")
-		train_caption = np.load("data/indexed_input/train/train_caption.npy")
-		train_labels = np.load("data/indexed_input/train/train_label.npy")
-		return ({"titleInputs" : train_title, 'subtitleInputs': train_subtitle, 'bodyInputs': train_body, 'captionInputs': train_caption}, train_labels)
+		train_title = np.load("train_title.npy") 
+		train_body = np.load("train_body.npy")
+		#train_subtitle = np.load("train_subtitle.npy")
+		#train_caption = np.load("train_caption.npy")
+		train_labels = np.load("train_label.npy")
+		return ({"titleInputs" : train_title,  'bodyInputs': train_body}, train_labels)
 
 	def get_validation_inputs(self):
-		valid_title = np.load("data/indexed_input/valid/valid_title.npy")
-		valid_body = np.load("data/indexed_input/valid/valid_body.npy")
-		valid_subtitle = np.load("data/indexed_input/valid/valid_subtitle.npy")
-		valid_caption = np.load("data/indexed_input/valid/valid_caption.npy")
-		valid_labels = np.load("data/indexed_input/valid/valid_label.npy")
-		return ({"titleInputs" : valid_title, 'subtitleInputs': valid_subtitle, 'bodyInputs': valid_body, 'captionInputs': valid_caption}, valid_labels)
+		valid_title = np.load("valid_title.npy")
+		valid_body = np.load("valid_body.npy")
+		# valid_subtitle = np.load("data/indexed_input/valid/valid_subtitle.npy")
+		# valid_caption = np.load("data/indexed_input/valid/valid_caption.npy")
+		valid_labels = np.load("valid_label.npy")
+		return ({"titleInputs" : valid_title, 'bodyInputs': valid_body}, valid_labels)
 
 	def get_embedding(self):
-		return np.load('data/embedding_matrix/embedding_matrix_kor.npy')
+		return np.load("embedding_mat.npy")
 	
 	def load_model(self):
 		m = Model(self.model_name)
-		model,_ = m.get_model(MAX_WORD_TIT=self.max_tit, MAX_WORD_SUB=self.max_sub, MAX_WORD_SENT=self.max_body, MAX_LEN_SENT=self.max_sent, MAX_WORD_CAP=self.max_cap,
+		model,_ = m.get_model(MAX_WORD_TIT=self.max_tit, MAX_WORD_SENT=self.max_body, MAX_LEN_SENT=self.max_sent,
 		EMB_MAT=self.emb_mat, DROP=self.drop, HIDDEN1=self.hidden1, HIDDEN2=self.hidden2)
 		return model
 
@@ -161,7 +161,7 @@ class Trainer(object):
 				save = ModelSave(vacc_seq,self.valid_accuracy.result())
 				if save:
 					print("Save Model with best validation accuracy")
-					self.model.save_weights("data/src/checkpoint/bestmodel_checkpoint")
+					self.model.save_weights("bestmodel_checkpoint")
 					print("Saving Finish!!!")
 
 				stopEarly = EarlyStopping(tacc_seq, vacc_seq, min_delta=self.min_delta, patience=self.patience)

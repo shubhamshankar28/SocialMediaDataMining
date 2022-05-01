@@ -3,21 +3,21 @@ import numpy as np
 from model import Model
 
 def get_test_inputs():
-	test_title = np.load('data/indexed_input/test/test_title.npy')
-	test_body = np.load('data/indexed_input/test/test_body.npy')
-	test_subtitle = np.load("data/indexed_input/test/test_subtitle.npy")
-	test_caption = np.load("data/indexed_input/test/test_caption.npy")
-	test_labels = np.load('data/indexed_input/test/test_label.npy')
-	return ({"titleInputs" : test_title, 'subtitleInputs': test_subtitle, 'bodyInputs': test_body, 'captionInputs': test_caption}, test_labels)
+	test_title = np.load('test_title.npy')
+	test_body = np.load('test_body.npy')
+	# test_subtitle = np.load("data/indexed_input/test/test_subtitle.npy")
+	# test_caption = np.load("data/indexed_input/test/test_caption.npy")
+	test_labels = np.load('test_label.npy')
+	return ({"titleInputs" : test_title,  'bodyInputs': test_body}, test_labels)
 
 def load_model(model_name='DINHATI', max_tit=29, max_sub=114, max_body=35, max_sent=12, max_cap=24, emb_mat=None, drop=0.1, hidden1=512, hidden2=256):
 	m = Model(model_name)
-	model,_ = m.get_model(MAX_WORD_TIT=max_tit, MAX_WORD_SUB=max_sub, MAX_WORD_SENT=max_body, MAX_LEN_SENT=max_sent, MAX_WORD_CAP=max_cap, EMB_MAT=emb_mat, DROP=drop, HIDDEN1=hidden1, HIDDEN2=hidden2)
-	model.load_weights("data/src/checkpoint/bestmodel_checkpoint")
+	model,_ = m.get_model(MAX_WORD_TIT=max_tit, MAX_WORD_SENT=max_body, MAX_LEN_SENT=max_sent, EMB_MAT=emb_mat, DROP=drop, HIDDEN1=hidden1, HIDDEN2=hidden2)
+	model.load_weights("bestmodel_checkpoint")
 	return model
 
 def get_embedding():
-	return np.load('data/embedding_matrix/embedding_matrix_kor.npy')
+	return np.load('embedding_mat.npy')
 
 def test():
 	test_inputs = get_test_inputs()

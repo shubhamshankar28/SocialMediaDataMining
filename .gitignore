@@ -3,3 +3,6 @@ data/dataset/
 data/src/checkpoint/
 *.npy
 *.pickle
+*.txt 
+*.csv 
+*.pdf
